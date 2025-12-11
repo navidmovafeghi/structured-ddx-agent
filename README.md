@@ -46,7 +46,7 @@ graph TD
 ## 🛠️ Tech Stack
 
   * **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (Cyclic state management)
-  * **LLM:** OpenAI GPT-4o
+  * **LLM:** OpenAI GPT-5.1
   * **Validation:** [Pydantic](https://www.google.com/search?q=https://docs.pydantic.dev/) (Strict schemas for Clinical Data)
   * **Pattern:** Human-in-the-Loop (HITL) via state checkpoints
 
