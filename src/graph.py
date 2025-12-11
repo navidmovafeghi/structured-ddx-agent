@@ -7,6 +7,9 @@ A multi-node graph that:
 3. Generates differential diagnosis based on symptom + Q&A
 """
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from typing import Annotated
 
 from pydantic import BaseModel, Field
