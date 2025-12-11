@@ -92,6 +92,24 @@ pip install -r requirements.txt
 python src/graph.py
 ```
 
+## 🎯 Project Purpose: Closing the "Symptom-to-Care" Gap
+
+**This tool is designed to be an intelligent notifier, not a replacement for a doctor.**
+
+In the current healthcare landscape, there is often a critical time gap between the onset of symptoms and professional medical evaluation. Many patients underestimate serious symptoms due to a lack of medical knowledge, leading to delayed treatment and poorer outcomes. Conversely, anxiety can lead to unnecessary ER visits for benign conditions.
+
+The goal of this project is to bridge that gap by providing an **accessible, structured triage layer**:
+
+* **📉 Reduce Time-to-Care:** Help patients identify concerning "Red Flag" signals immediately, motivating them to seek professional care faster.
+* **🧠 Empower Patients:** Translate vague feelings ("I feel weird") into structured clinical data ("Sudden onset, severe severity, associated with nausea") that is useful for doctors.
+* **🚨 Early Detection:** Catch potential life-threatening conditions (e.g., Meningitis, Stroke signs) that a layperson might miss, serving as an early warning system.
+
+**What this is NOT:**
+
+* It is **not** an automated diagnostic device.
+* It does **not** prescribe medication or treatment.
+* It is **not** a substitute for professional medical advice.
+
 ## ⚠️ Disclaimer
 
 **This is an architectural demonstration of AI reasoning patterns, not a medical device.**
