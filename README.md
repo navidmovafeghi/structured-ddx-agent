@@ -39,6 +39,10 @@ graph TD
     style F fill:#bbf,stroke:#333,stroke-width:2px
 ````
 
+### Graph Topology
+
+![Graph Topology](images/graph_topology.png)
+
 ## 🛠️ Tech Stack
 
   * **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (Cyclic state management)
