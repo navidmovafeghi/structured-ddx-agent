@@ -68,7 +68,7 @@ graph TD
 ### 1\. Clone the repository
 
 ```bash
-git clone [https://github.com/yourusername/structured-ddx-agent.git](https://github.com/yourusername/structured-ddx-agent.git)
+git clone https://github.com/navidmovafeghi/structured-ddx-agent.git
 cd structured-ddx-agent
 ```
 

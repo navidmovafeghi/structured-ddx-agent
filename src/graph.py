@@ -557,43 +557,101 @@ builder.add_edge("generate_final_summary", END)
 
 # Compile with checkpointer (required for interrupt)
 checkpointer = InMemorySaver()
-graph = builder.compile()
-
+graph = builder.compile(checkpointer=checkpointer)
 
 
 # ============================================================================
-# USAGE EXAMPLE
+# MAIN ENTRY POINT
 # ============================================================================
-# from langchain_core.messages import HumanMessage
-# from langgraph.types import Command
-#
-# config = {"configurable": {"thread_id": "patient-123"}}
-#
-# # Step 1: Start with symptom - will pause at collect_answers
-# result = graph.invoke(
-#     {
-#         "messages": [HumanMessage(content="I have a severe headache")],
-#         "symptom_input": "",
-#         "preliminary_questions": None,
-#         "qa_pairs": None,
-#         "differential_diagnosis": None,
-#     },
-#     config=config,
-# )
-#
-# # Check the interrupt - shows questions to answer
-# print(result["__interrupt__"])
-#
-# # Step 2: Resume with plain text answer (no special format needed!)
-# result = graph.invoke(
-#     Command(resume="It started about 2 days ago. The pain is throbbing, "
-#                    "maybe 7 out of 10. I've had some nausea but no fever. "
-#                    "Ibuprofen helps a little."),
-#     config=config,
-# )
-#
-# # Access the differential diagnosis
-# ddx = result["differential_diagnosis"]
-# print(f"Urgency: {ddx.urgency_level}")
-# for d in ddx.differential:
-#     print(f"- {d.condition}: {d.probability:.0%} - {d.reasoning}")
+
+if __name__ == "__main__":
+    from langgraph.types import Command
+    
+    config = {"configurable": {"thread_id": "patient-001"}}
+    
+    # Get initial symptom from user
+    print("=" * 60)
+    print("🩺 Structured DDx Agent - Medical Symptom Checker")
+    print("=" * 60)
+    symptom = input("\nDescribe your symptom(s): ")
+    
+    # Step 1: Start with symptom - will pause at collect_answers
+    result = graph.invoke(
+        {
+            "messages": [HumanMessage(content=symptom)],
+            "symptom_input": "",
+            "preliminary_questions": None,
+            "qa_pairs": None,
+            "differential_diagnosis": None,
+            "refinement_qa_pairs": None,
+            "current_refinement_question": None,
+            "refined_ddx": None,
+            "refinement_count": 0,
+            "final_summary": None,
+        },
+        config=config,
+    )
+    
+    # Main interaction loop
+    while True:
+        # Check for interrupt
+        interrupt_data = result.get("__interrupt__")
+        if not interrupt_data:
+            break
+            
+        interrupt_value = interrupt_data[0].value if interrupt_data else None
+        
+        if not interrupt_value:
+            break
+        
+        # Display questions or refinement question
+        if "questions" in interrupt_value:
+            print("\n" + "-" * 40)
+            print("📋 Please answer these screening questions:")
+            print("-" * 40)
+            for i, q in enumerate(interrupt_value["questions"], 1):
+                print(f"{i}. {q}")
+            print("\n" + interrupt_value.get("instructions", ""))
+        elif "refinement_question" in interrupt_value:
+            print("\n" + "-" * 40)
+            print("🔍 Follow-up question:")
+            print("-" * 40)
+            print(interrupt_value["refinement_question"])
+            print("\n" + interrupt_value.get("instructions", ""))
+        
+        # Get user response
+        user_input = input("\nYour response: ")
+        
+        # Resume with user's answer
+        result = graph.invoke(
+            Command(resume=user_input),
+            config=config,
+        )
+    
+    # Display final results
+    print("\n" + "=" * 60)
+    print("📊 DIFFERENTIAL DIAGNOSIS")
+    print("=" * 60)
+    
+    ddx = result.get("refined_ddx") or result.get("differential_diagnosis")
+    if ddx:
+        for d in ddx.differential:
+            severity_emoji = {
+                "life_threatening": "🚨",
+                "serious": "⚠️",
+                "moderate": "📌",
+                "mild": "✅"
+            }.get(d.severity, "•")
+            print(f"\n{severity_emoji} {d.condition} ({d.probability:.0%})")
+            print(f"   Severity: {d.severity}")
+            print(f"   Reasoning: {d.reasoning}")
+    
+    # Display final summary
+    summary = result.get("final_summary")
+    if summary:
+        print("\n" + "=" * 60)
+        print("📝 SUMMARY")
+        print("=" * 60)
+        print(f"\nMost likely: {summary.top_diagnosis} ({summary.probability:.0%})")
+        print(f"\n{summary.explanation}")
+        print(f"\n⚠️  {summary.disclaimer}")
